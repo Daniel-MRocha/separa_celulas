@@ -1,58 +1,60 @@
+import java.text.DecimalFormat;
+import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
 
-        String resultado;
-        int dinheiro;
-        Scanner le = new Scanner(System.in);
+        StringBuffer resposta = new StringBuffer();
+        float montante = 0;
+        DecimalFormat df = new DecimalFormat("R$ #,###.00");
 
-        dinheiro = le.nextInt();
-        le.close();
-        resultado = dinheiro + "\n";
+        try{
+            montante = valorParaParticionar();
+            resposta.append("Particionamento de " + df.format(montante) + "\n");
+        }catch (InputMismatchException e){
+            System.out.println("Erro: Use apenas números e vírgula");
+        }catch (Exception e){
+            System.out.println(e);
+        }
 
-        if(dinheiro >100){
-            resultado += dinheiro/100 + " nota(s) de R$ 100,00\n";
-            dinheiro = (dinheiro - ((dinheiro/100)*100));
-        }else{
-            resultado += "0 nota(s) de R$ 100,00\n";
+        int[] valoresCedulas = {100,50,20,10,5,2};
+        float[] valoresMoedas = {1F,0.5F,0.25F,0.1F,0.05F,0.01F};
+
+
+        for(int divisor : valoresCedulas){
+            var ciclo = (int) montante / divisor;
+            if(ciclo!=0){
+                resposta.append(ciclo + " cédula(s) de " + divisor + " R$\n");
+                montante -= (ciclo * divisor);
+            }
         }
-        if(dinheiro >50){
-            resultado += dinheiro/50 + " nota(s) de R$ 50,00\n";
-            dinheiro = (dinheiro - ((dinheiro/50)*50));
-        }else{
-            resultado += "0 nota(s) de R$ 50,00\n";
-        }
-        if(dinheiro >20){
-            resultado += dinheiro/20 + " nota(s) de R$ 20,00\n";
-            dinheiro = (dinheiro - ((dinheiro/20)*20));
-        }else{
-            resultado += "0 nota(s) de R$ 20,00\n";
-        }
-        if(dinheiro >10){
-            resultado += dinheiro/10 + " nota(s) de R$ 10,00\n";
-            dinheiro = (dinheiro - ((dinheiro/10)*10));
-        }else{
-            resultado += "0 nota(s) de R$ 10,00\n";
-        }
-        if(dinheiro >5){
-            resultado += dinheiro/5 + " nota(s) de R$ 5,00\n";
-            dinheiro = (dinheiro - ((dinheiro/5)*5));
-        }else{
-            resultado += "0 nota(s) de R$ 5,00\n";
-        }
-        if(dinheiro >2){
-            resultado += dinheiro/2 + " nota(s) de R$ 2,00\n";
-            dinheiro = (dinheiro - ((dinheiro/2)*2));
-        }else{
-            resultado += "0 nota(s) de R$ 2,00\n";
-        }
-        if(dinheiro >= 1){
-            resultado += dinheiro/1 + " nota(s) de R$ 1,00\n";
-            dinheiro = (dinheiro - ((dinheiro/1)*1));
-        }else{
-            resultado += "0 nota(s) de R$ 1,00\n";
-        }
-        System.out.println(resultado);
+
+            if(montante<=1.99F) {
+                for (Float divisorM : valoresMoedas) {
+                    var cicloM =  montante / divisorM;
+                    if ((int) cicloM != 0) {
+                        resposta.append( (int) cicloM + " moedas(s) de " + divisorM + " \u00A2\n");
+                        cicloM = (int) cicloM;
+                        montante -= divisorM * cicloM;
+                        montante = (float) (Math.round(montante * 100.0) / 100.0);
+                    }
+                }
+            }
+
+
+
+        System.out.println(resposta.toString());
+
+
+    }
+
+    public static float valorParaParticionar() throws InputMismatchException {
+        Scanner leitura = new Scanner(System.in);
+
+        System.out.print("\nDigite o valor a ser particionado: ");
+        float valor = leitura.nextFloat();
+        leitura.close();
+        return valor;
     }
 }
